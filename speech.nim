@@ -1,4 +1,4 @@
-# Nimrod module for speech-to-text using Google's Speech API,
+# Nim module for speech-to-text using Google's Speech API,
 # and text-to-speech using http://tts-api.com/.
 
 # Written by Adam Chesak.
@@ -16,7 +16,7 @@ type
     GoogleSpeechResult* = tuple[transcript : string, confidence : float]
 
 
-proc getTextFromSpeech*(audio : TFile, audioType : string = "audio/x-flac", rate : int = 44100, key : string,
+proc getTextFromSpeech*(audio : File, audioType : string = "audio/x-flac", rate : int = 44100, key : string,
                         lang : string = "en-US", app : string = "", client : string = ""): GoogleSpeech = 
     ## Gets the text from the specified audio file.
     ##
@@ -44,15 +44,15 @@ proc getTextFromSpeech*(audio : TFile, audioType : string = "audio/x-flac", rate
         url &= "&client=" & client
     
     var body : string = audio.readAll()
-    var response : TResponse = post(url, headers, body)
+    var response : Response = post(url, headers, body)
     var data : string = response.body
     echo(data)
     
-    var dataJson : PJsonNode = parseJson(data)
+    var dataJson : JsonNode = parseJson(data)
     var gs : GoogleSpeech
     gs.resultIndex = $dataJson["result_index"]
     gs.final = dataJson["result"][0]["final"].bval
-    var results : PJsonNode = dataJson["result"][0]["alternative"]
+    var results : JsonNode = dataJson["result"][0]["alternative"]
     var gsSeq = newSeq[GoogleSpeechResult](len(results))
     for i in 0..len(results)-1:
         var result : GoogleSpeechResult
@@ -79,7 +79,7 @@ proc getSpeechFromText*(text : string): string =
     ## Gets the URL of an MP3 file containing the spoken text.
     
     var url : string = "http://tts-api.com/tts.mp3?q="
-    url &= urlEncode(text)
+    url &= encodeUrl(text)
     url &= "&return_url=1"
     
     var speechUrl : string = getContent(url)
