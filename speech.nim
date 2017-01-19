@@ -93,5 +93,6 @@ proc downloadSpeechFromText*(text : string, filename : string) {.noreturn.} =
     downloadFile(getSpeechFromText(text), filename)
 
 
+# Run as a demo when not a library:
 when isMainModule:
-    downloadSpeechFromText("Hello world, from the nimrod speech module!", "testing.mp3")
+    downloadSpeechFromText("Hello world, from nim-speech!", "testing.mp3")
